@@ -9,7 +9,7 @@ description = "Kuwo music file decryption library for Python"
 authors = [
     { name = "Your Name", email = "your.email@example.com" }
 ]
-readme = { file = "README.md" }
+readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 keywords = ["kuwo", "music", "decryption", "audio"]
 classifiers = [
