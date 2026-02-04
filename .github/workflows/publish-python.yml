@@ -13,12 +13,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # 移除了 windows-latest
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
         exclude:
-          # 排除不兼容的组合
-          - os: windows-latest
-            python-version: "3.8"
+          # 简化了排除条件，现在只需要排除 macOS 上的 Python 3.8
           - os: macos-latest
             python-version: "3.8"
 
