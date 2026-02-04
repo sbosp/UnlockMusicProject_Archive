@@ -1,0 +1,15 @@
+[package]
+name = "um_python"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "um_python"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["extension-module"] }
+umc_kuwo = { path = "../um_crypto/kuwo" }
+
+[build-dependencies]
+pyo3-build-config = "0.21"

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "um-python"
+version = "0.1.0"
+description = "Kuwo music file decryption library for Python"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["kuwo", "music", "decryption", "audio"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+bindings = "pyo3"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/um-python"
+Repository = "https://github.com/yourusername/um-python"
+Documentation = "https://github.com/yourusername/um-python#readme"
