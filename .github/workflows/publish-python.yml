@@ -41,7 +41,7 @@ jobs:
         echo "Updating version to: $VERSION"
         
         # 使用sed命令更新pyproject.toml中的版本号
-        sed -i.bak "s/version = \"[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+\"/version = \"$VERSION\"/" pyproject.toml
+        sed -i.bak 's/version = ".*"/version = "'"$VERSION"'"/' pyproject.toml
         
         # 验证版本号更新
         echo "Updated pyproject.toml version section:"
@@ -57,15 +57,20 @@ jobs:
         export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
         
         echo "Building for ${{ matrix.os }} ${{ matrix.architecture }} architecture"
+        
+        # 验证pyproject.toml版本号
+        echo "Current pyproject.toml version:"
+        grep "version = " pyproject.toml
+        
         maturin build --release --interpreter python
         echo "Built wheel files:"
-        ls -la ../target/wheels/
+        ls -la target/wheels/
 
     - name: Upload wheels as artifacts
       uses: actions/upload-artifact@v4
       with:
         name: wheels-${{ matrix.os }}-${{ matrix.architecture }}-py${{ matrix.python-version }}
-        path: tmp/lib_um_crypto_rust/target/wheels/*.whl
+        path: target/wheels/*.whl
         retention-days: 7
 
   publish:
