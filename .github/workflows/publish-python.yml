@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '要发布的版本号（格式：v1.2.3）'
+        description: '要发布的版本号（格式：1.2.3）'
         required: true
         type: string
-        default: 'v1.0.0'
+        default: '1.0.0'
 
 jobs:
   build:
@@ -34,6 +34,19 @@ jobs:
         toolchain: stable
         components: rustfmt, clippy
 
+    - name: Update version in pyproject.toml
+      working-directory: tmp/lib_um_crypto_rust/um_python
+      run: |
+        VERSION="${{ github.event.inputs.version }}"
+        echo "Updating version to: $VERSION"
+        
+        # 使用sed命令更新pyproject.toml中的版本号
+        sed -i.bak "s/version = \"[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+\"/version = \"$VERSION\"/" pyproject.toml
+        
+        # 验证版本号更新
+        echo "Updated pyproject.toml version section:"
+        grep "version = " pyproject.toml
+
     - name: Install maturin
       run: pip install maturin
 
@@ -59,7 +72,7 @@ jobs:
     name: Publish to PyPI
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event.name == 'workflow_dispatch' }}
 
     steps:
     - name: Checkout repository
@@ -68,8 +81,8 @@ jobs:
     - name: Validate version format
       run: |
         VERSION="${{ github.event.inputs.version }}"
-        if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "错误：版本号格式不正确，请使用 vX.Y.Z 格式（例如：v1.0.0）"
+        if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "错误：版本号格式不正确，请使用 X.Y.Z 格式（例如：1.0.0）"
           exit 1
         fi
         echo "版本号验证通过: $VERSION"
