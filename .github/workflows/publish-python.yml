@@ -62,7 +62,15 @@ jobs:
         echo "Current pyproject.toml version:"
         grep "version = " pyproject.toml
         
-        maturin build --release --interpreter python
+        # 根据架构设置目标平台
+        if [ "${{ matrix.architecture }}" = "arm64" ]; then
+          echo "Building for ARM64 architecture"
+          maturin build --release --interpreter python --target aarch64-unknown-linux-gnu
+        else
+          echo "Building for x64 architecture"
+          maturin build --release --interpreter python
+        fi
+        
         echo "Built wheel files:"
         ls -la ../target/wheels/
 
