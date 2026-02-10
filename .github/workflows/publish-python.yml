@@ -65,10 +65,10 @@ jobs:
         # 根据架构设置目标平台
         if [ "${{ matrix.architecture }}" = "arm64" ]; then
           echo "Building for ARM64 architecture"
-          maturin build --release --interpreter python --target aarch64-unknown-linux-gnu
+          maturin build --release --target aarch64-unknown-linux-gnu
         else
           echo "Building for x64 architecture"
-          maturin build --release --interpreter python
+          maturin build --release
         fi
         
         echo "Built wheel files:"
