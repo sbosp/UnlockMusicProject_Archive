@@ -1,26 +1,26 @@
 name: Publish Python Package to PyPI
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '要发布的版本号（格式：v1.2.3）'
+        required: true
+        type: string
+        default: 'v1.0.0'
   push:
-    tags:
-      - "v*"
     branches:
       - main
 
 jobs:
-  build-and-publish:
-    name: Build and Publish Python Package
+  build:
+    name: Build Python Package
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
-        exclude:
-          # 排除不兼容的组合
-          - os: windows-latest
-            python-version: "3.8"
-          - os: macos-latest
-            python-version: "3.8"
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        architecture: [x64, arm64]
 
     steps:
     - name: Checkout repository
@@ -43,6 +43,10 @@ jobs:
     - name: Build Python package
       working-directory: tmp/lib_um_crypto_rust/um_python
       run: |
+        # 启用ABI3向前兼容性
+        export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+        
+        echo "Building for ${{ matrix.os }} ${{ matrix.architecture }} architecture"
         maturin build --release --interpreter python
         echo "Built wheel files:"
         ls -la ../target/wheels/
@@ -50,24 +54,33 @@ jobs:
     - name: Upload wheels as artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: python-wheels-${{ matrix.os }}-py${{ matrix.python-version }}
+        name: wheels-${{ matrix.os }}-${{ matrix.architecture }}-py${{ matrix.python-version }}
         path: tmp/lib_um_crypto_rust/target/wheels/*.whl
         retention-days: 7
 
   publish:
     name: Publish to PyPI
-    needs: build-and-publish
+    needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: ${{ github.event_name == 'workflow_dispatch' }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Validate version format
+      run: |
+        VERSION="${{ github.event.inputs.version }}"
+        if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "错误：版本号格式不正确，请使用 vX.Y.Z 格式（例如：v1.0.0）"
+          exit 1
+        fi
+        echo "版本号验证通过: $VERSION"
+
     - name: Download all wheels
       uses: actions/download-artifact@v4
       with:
-        pattern: python-wheels-*
+        pattern: wheels-*
         path: dist
 
     - name: Combine all wheels
@@ -80,7 +93,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.13"
+        python-version: "3.x"
 
     - name: Install twine
       run: pip install twine
@@ -90,4 +103,6 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
+        echo "发布版本: ${{ github.event.inputs.version }}"
         twine upload combined_dist/*.whl
+        echo "✅ 发布完成！版本 ${{ github.event.inputs.version }} 已成功发布到 PyPI"
