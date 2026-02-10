@@ -4,12 +4,12 @@ build-backend = "maturin"
 
 [project]
 name = "um-python"
-version = "0.1.0"
+version = "0.2.0"
 description = "Kuwo music file decryption library for Python"
 authors = [
     { name = "Your Name", email = "your.email@example.com" }
 ]
-readme = { file = "README.md" }
+readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 keywords = ["kuwo", "music", "decryption", "audio"]
 classifiers = [
