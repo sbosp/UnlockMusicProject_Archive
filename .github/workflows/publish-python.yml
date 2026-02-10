@@ -15,27 +15,94 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         include:
           # Linux x64
           - os: ubuntu-latest
             arch: x64
             platform: linux-x64
+            python-version: "3.9"
+          - os: ubuntu-latest
+            arch: x64
+            platform: linux-x64
+            python-version: "3.10"
+          - os: ubuntu-latest
+            arch: x64
+            platform: linux-x64
+            python-version: "3.11"
+          - os: ubuntu-latest
+            arch: x64
+            platform: linux-x64
+            python-version: "3.12"
+          - os: ubuntu-latest
+            arch: x64
+            platform: linux-x64
+            python-version: "3.13"
 
           # macOS x64
           - os: macos-latest
             arch: x64
             platform: macos-x64
+            python-version: "3.9"
+          - os: macos-latest
+            arch: x64
+            platform: macos-x64
+            python-version: "3.10"
+          - os: macos-latest
+            arch: x64
+            platform: macos-x64
+            python-version: "3.11"
+          - os: macos-latest
+            arch: x64
+            platform: macos-x64
+            python-version: "3.12"
+          - os: macos-latest
+            arch: x64
+            platform: macos-x64
+            python-version: "3.13"
 
           # Linux ARM64 - 使用 ARM 运行器
           - os: ubuntu-24.04-arm
             arch: arm64
             platform: linux-arm64
+            python-version: "3.9"
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            platform: linux-arm64
+            python-version: "3.10"
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            platform: linux-arm64
+            python-version: "3.11"
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            platform: linux-arm64
+            python-version: "3.12"
+          - os: ubuntu-24.04-arm
+            arch: arm64
+            platform: linux-arm64
+            python-version: "3.13"
 
           # macOS ARM64 (Apple Silicon)
           - os: macos-14
             arch: arm64
             platform: macos-arm64
+            python-version: "3.9"
+          - os: macos-14
+            arch: arm64
+            platform: macos-arm64
+            python-version: "3.10"
+          - os: macos-14
+            arch: arm64
+            platform: macos-arm64
+            python-version: "3.11"
+          - os: macos-14
+            arch: arm64
+            platform: macos-arm64
+            python-version: "3.12"
+          - os: macos-14
+            arch: arm64
+            platform: macos-arm64
+            python-version: "3.13"
 
     steps:
     - name: Checkout repository
@@ -74,7 +141,7 @@ jobs:
         # 启用ABI3向前兼容性
         export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
         
-        echo "Building for ${{ matrix.os }} ${{ matrix.architecture }} architecture"
+        echo "Building for ${{ matrix.os }} ${{ matrix.arch }} architecture"
         
         # 验证pyproject.toml版本号
         echo "Current pyproject.toml version:"
@@ -88,7 +155,7 @@ jobs:
     - name: Upload wheels as artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: wheels-${{ matrix.os }}-${{ matrix.architecture }}-py${{ matrix.python-version }}
+        name: wheels-${{ matrix.os }}-${{ matrix.arch }}-py${{ matrix.python-version }}
         path: tmp/lib_um_crypto_rust/target/wheels/*.whl
         retention-days: 7
 
